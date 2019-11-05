@@ -110,11 +110,11 @@ commands:
           name: Tag Docker (Staging)
           command: ssh root@$DOKKU_SERVER "docker tag dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 dokku/$CIRCLE_PROJECT_REPONAME-staging:$CIRCLE_SHA1"
       - run:
-          name: Push Docker (Staging)
+          name: Update Server (Staging)
           command: ssh root@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME-staging $CIRCLE_SHA1"
 
   deploy-production:
     steps:
       - run:
-          name: Push Docker (Production)
+          name: Update Server (Production)
           command: ssh root@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1"
