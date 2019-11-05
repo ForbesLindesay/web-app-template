@@ -99,7 +99,7 @@ commands:
           command: docker build -t dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
       - run:
           name: Push Docker
-          command: docker save dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 | bzip2 | pv | ssh root@$DOKKU_SERVER "bunzip2 | docker load"
+          command: docker save dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 | bzip2 | ssh root@$DOKKU_SERVER "bunzip2 | docker load"
 
   deploy-staging:
     steps:
