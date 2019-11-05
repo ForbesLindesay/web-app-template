@@ -51,6 +51,9 @@ jobs:
       - setup
       - build
       - authenticate
+      - run:
+          name: Test Connection
+          command: ssh -o StrictHostKeyChecking=no root@$DOKKU_SERVER "echo Hello World"
       - push
       - deploy-staging
 
@@ -99,7 +102,7 @@ commands:
           command: docker build -t dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
       - run:
           name: Push Docker
-          command: docker save dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 | bzip2 | ssh root@$DOKKU_SERVER "bunzip2 | docker load"
+          command: docker save dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 | bzip2 | ssh -o StrictHostKeyChecking=no root@$DOKKU_SERVER "bunzip2 | docker load"
 
   deploy-staging:
     steps:
