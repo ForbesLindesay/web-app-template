@@ -1,5 +1,7 @@
 # web-app-template
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/ForbesLindesay/web-app-template.svg)](https://greenkeeper.io/)
+
 A template for a node app using TypeScript deployed to dokku
 
 ## Setting up Dokku
