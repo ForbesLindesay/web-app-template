@@ -93,6 +93,7 @@ commands:
 
   push:
     steps:
+      - setup_remote_docker
       - run:
           name: Build Docker
           command: docker build -t dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
