@@ -51,9 +51,6 @@ jobs:
       - setup
       - build
       - authenticate
-      - run:
-          name: Test Connection
-          command: ssh -o StrictHostKeyChecking=no root@$DOKKU_SERVER "echo Hello World"
       - push
       - deploy-staging
 
@@ -93,6 +90,9 @@ commands:
       - add_ssh_keys:
           fingerprints:
             - '2f:e6:90:bb:61:85:fe:d5:9a:1a:27:77:9e:09:8d:fd'
+      - run:
+          name: Test Connection
+          command: ssh -o StrictHostKeyChecking=no root@$DOKKU_SERVER "echo Connection Successful"
 
   push:
     steps:

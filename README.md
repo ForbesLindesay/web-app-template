@@ -38,8 +38,8 @@ Host dokku
 ## Setting up a new app
 
 1. ssh into the dokku server `ssh dokku`
-1. create the app `dokku apps:create web-app-template`
-1. enable zero downtime deploys `dokku checks:enable web-app-template` - N.B. this will result in 2 coppies of each app running in parallel during deploys
+1. create the app `dokku apps:create web-app-template && dokku apps:create web-app-template-staging`
+1. enable zero downtime deploys `dokku checks:enable web-app-template && dokku checks:enable web-app-template-staging` - N.B. this will result in 2 coppies of each app running in parallel during deploys
 
 ## Deploying locally
 
@@ -58,7 +58,7 @@ After you follow the instructions for "Setting up a new app". You can configure 
 1. Go to Circle CI -> web-app-template -> Settings -> SSH Permissions (https://circleci.com/gh/ForbesLindesay/web-app-template/edit#ssh)
 1. Put the copy of the `key` file into a new SSH key and leave the hostname blank
 1. Copy the "Fingerprint" into ".circleci/config.yml" in place of the fingerprint that is currently there.
-1. `cat key.pub | ssh dokku "dokku ssh-keys:add web-app-template"`.
+1. `cat key.pub | ssh dokku "cat >> ~/.ssh/authorized_keys"`.
 1. Set the `DOKKU_SERVER` env var to the IP address of your dokku server in Circle CI.
 
 ## Enabling HTTPS
