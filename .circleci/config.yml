@@ -16,58 +16,29 @@ workflows:
     jobs:
       - unit-tests:
           <<: *not_master
-          name: node-8
-          version: '8'
-      - unit-tests:
-          <<: *not_master
-          name: node-10
-          version: '10'
-      - unit-tests:
-          <<: *not_master
-          name: node-12
-          version: '12'
 
   release:
     jobs:
-      - unit-tests:
-          <<: *only_master
-          name: node-8
-          version: '8'
-      - unit-tests:
-          <<: *only_master
-          name: node-10
-          version: '10'
-      - unit-tests:
-          <<: *only_master
-          name: node-12
-          version: '12'
-
-      - publish-dry-run:
+      - deploy-staging:
           <<: *only_master
           context: common-env
 
-      - publish-approval:
+      - production-approval:
           type: approval
           context: common-env
           requires:
-            - publish-dry-run
+            - deploy-staging
 
-      - publish:
+      - deploy-production:
           <<: *only_master
           context: common-env
           requires:
-            - node-8
-            - node-10
-            - node-12
-            - publish-approval
+            - production-approval
 
 jobs:
   unit-tests:
-    parameters:
-      version:
-        type: string
     docker:
-      - image: circleci/node:<< parameters.version >>
+      - image: circleci/node:12
     steps:
       - setup
       - build
