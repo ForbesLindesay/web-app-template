@@ -69,5 +69,7 @@ See [Effortlessly add HTTPS to Dokku, with Let’s Encrypt](https://medium.com/@
 1. Update letsencrypt plugin `dokku plugin:update letsencrypt`
 1. Set email for app `dokku config:set --no-restart web-app-template DOKKU_LETSENCRYPT_EMAIL=YOUR_EMAIL_ADDRESS_HERE`
 1. Enable letsencrypt `dokku letsencrypt web-app-template`
+1. Set email for app `dokku config:set --no-restart web-app-template-staging DOKKU_LETSENCRYPT_EMAIL=YOUR_EMAIL_ADDRESS_HERE`
+1. Enable letsencrypt `dokku letsencrypt web-app-template-staging`
 
 (one off for the server, also run `dokku letsencrypt:cron-job --add`)

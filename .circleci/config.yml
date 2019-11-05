@@ -92,7 +92,7 @@ commands:
             - '2f:e6:90:bb:61:85:fe:d5:9a:1a:27:77:9e:09:8d:fd'
       - run:
           name: Test Connection
-          command: ssh -o StrictHostKeyChecking=no root@$DOKKU_SERVER "echo Connection Successful"
+          command: ssh -o StrictHostKeyChecking=no dokku@$DOKKU_SERVER "echo Connection Successful"
 
   push:
     steps:
@@ -102,19 +102,19 @@ commands:
           command: docker build -t dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
       - run:
           name: Push Docker
-          command: docker save dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 | bzip2 | ssh root@$DOKKU_SERVER "bunzip2 | docker load"
+          command: docker save dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 | bzip2 | ssh dokku@$DOKKU_SERVER "bunzip2 | docker load"
 
   deploy-staging:
     steps:
       - run:
           name: Tag Docker (Staging)
-          command: ssh root@$DOKKU_SERVER "docker tag dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 dokku/$CIRCLE_PROJECT_REPONAME-staging:$CIRCLE_SHA1"
+          command: ssh dokku@$DOKKU_SERVER "docker tag dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 dokku/$CIRCLE_PROJECT_REPONAME-staging:$CIRCLE_SHA1"
       - run:
           name: Update Server (Staging)
-          command: ssh root@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME-staging $CIRCLE_SHA1"
+          command: ssh dokku@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME-staging $CIRCLE_SHA1"
 
   deploy-production:
     steps:
       - run:
           name: Update Server (Production)
-          command: ssh root@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1"
+          command: ssh dokku@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1"
