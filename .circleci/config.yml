@@ -102,19 +102,19 @@ commands:
           command: docker build -t dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
       - run:
           name: Push Docker
-          command: docker save dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 | bzip2 | ssh root@$DOKKU_SERVER "bunzip2 | docker load"
+          command: docker-over-ssh push dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 |  ssh dokku "docker-over-ssh pull dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1"
 
   deploy-staging:
     steps:
       - run:
           name: Tag Docker (Staging)
-          command: ssh root@$DOKKU_SERVER "docker tag dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 dokku/$CIRCLE_PROJECT_REPONAME-staging:$CIRCLE_SHA1"
+          command: ssh ci@$DOKKU_SERVER "docker tag dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 dokku/$CIRCLE_PROJECT_REPONAME-staging:$CIRCLE_SHA1"
       - run:
           name: Update Server (Staging)
-          command: ssh root@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME-staging $CIRCLE_SHA1"
+          command: ssh ci@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME-staging $CIRCLE_SHA1"
 
   deploy-production:
     steps:
       - run:
           name: Update Server (Production)
-          command: ssh root@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1"
+          command: ssh ci@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1"

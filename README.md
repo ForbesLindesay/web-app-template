@@ -4,14 +4,7 @@ A template for a node app using TypeScript deployed to dokku
 
 ## Setting up Dokku
 
-Set up https://marketplace.digitalocean.com/apps/dokku and make sure you add the SSH key that's in `~/.ssh/id_rsa.pub`.
-
-Add the following to `~/.ssh/config` (using the correct IP):
-```
-Host dokku
-  HostName IP_ADDRESS_OF_DOKKU_SERVER
-  User root
-```
+See https://github.com/ForbesLindesay/dokku-ci-user for setup instructions
 
 ## Setting up the repo
 
@@ -46,8 +39,8 @@ Host dokku
 See [Dokku - Docker Image Tag Deployment](http://dokku.viewdocs.io/dokku/deployment/methods/images/)
 
 1. build the typescript etc. `yarn build`
-1. build an initial image `docker build -t dokku/web-app-template:v0 .`
-1. push `docker save dokku/web-app-template:0 | bzip2 | pv | ssh dokku "bunzip2 | docker load"` (you can get the total number of bytes that will need to be transferred by running `docker save dokku/web-app-template:0 | bzip2 | wc -c`)
+1. build an initial image `docker build -t dokku/web-app-template:0 .`
+1. push `docker-over-ssh push dokku/web-app-template:0 ssh dokku "docker-over-ssh pull dokku/web-app-template:0"`
 1. deploy `ssh dokku "dokku tags:deploy web-app-template 0"`
 
 ## Setting up Circle CI
@@ -58,7 +51,7 @@ After you follow the instructions for "Setting up a new app". You can configure 
 1. Go to Circle CI -> web-app-template -> Settings -> SSH Permissions (https://circleci.com/gh/ForbesLindesay/web-app-template/edit#ssh)
 1. Put the copy of the `key` file into a new SSH key and leave the hostname blank
 1. Copy the "Fingerprint" into ".circleci/config.yml" in place of the fingerprint that is currently there.
-1. `cat key.pub | ssh dokku "cat >> ~/.ssh/authorized_keys"`.
+1. `cat key.pub | ssh dokku "dokku-ci-user add:user --name web-app-template --app web-app-template --app web-app-template-staging"`.
 1. Set the `DOKKU_SERVER` env var to the IP address of your dokku server in Circle CI.
 
 ## Enabling HTTPS
