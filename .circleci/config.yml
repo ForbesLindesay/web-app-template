@@ -92,7 +92,7 @@ commands:
             - '2f:e6:90:bb:61:85:fe:d5:9a:1a:27:77:9e:09:8d:fd'
       - run:
           name: Test Connection
-          command: ssh -o StrictHostKeyChecking=no root@$DOKKU_SERVER "dokku version"
+          command: ssh -o StrictHostKeyChecking=no ci@$DOKKU_SERVER "dokku version"
 
   push:
     steps:
