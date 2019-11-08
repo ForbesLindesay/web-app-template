@@ -102,7 +102,7 @@ commands:
           command: docker build -t dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
       - run:
           name: Push Docker
-          command: npx docker-over-ssh push dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 |  ssh dokku "docker-over-ssh pull dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1"
+          command: npx docker-over-ssh push dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 ssh ci@$DOKKU_SERVER "docker-over-ssh pull dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1"
 
   deploy-staging:
     steps:
