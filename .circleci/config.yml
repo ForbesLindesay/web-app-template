@@ -61,6 +61,7 @@ jobs:
     docker:
       - image: circleci/node:12
     steps:
+      - checkout
       - deploy:
           environment: production
 
