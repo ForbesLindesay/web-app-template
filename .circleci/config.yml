@@ -114,7 +114,7 @@ commands:
       - kubernetes/install
       - run:
           name: Install jskube
-          command: yarn global add jskube
+          command: yarn global add jskube ts-node typescript
       - run:
           name: Copy certificate
           command: echo "$KUBERNETES_CLUSTER_CERTIFICATE" | base64 --decode > cert.crt
