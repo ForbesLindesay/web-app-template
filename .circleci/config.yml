@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  kubernetes: circleci/kubernetes@0.10.1
+
 refs:
   - &only_master
     filters:
@@ -12,15 +15,15 @@ refs:
         ignore: master
 
 workflows:
-  test:
-    jobs:
-      - unit-tests:
-          <<: *not_master
+  # test:
+  #   jobs:
+  #     - unit-tests:
+  #         <<: *not_master
 
   release:
     jobs:
       - deploy-staging:
-          <<: *only_master
+          # <<: *only_master
           context: common-env
 
       - production-approval:
@@ -30,7 +33,7 @@ workflows:
             - deploy-staging
 
       - deploy-production:
-          <<: *only_master
+          # <<: *only_master
           context: common-env
           requires:
             - production-approval
@@ -107,23 +110,18 @@ commands:
       environment:
         type: enum
         enum: ['staging', 'production']
-    steps:
+      - kube-orb/install
       - run:
-          name: Install envsubst
-          command: |
-            sudo apt-get update && sudo apt-get -y install gettext-base
+          name: Install jskube
+          command: yarn global add jskube
       - run:
-          name: Install kubectl
-          command: |
-            curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-            chmod u+x ./kubectl
-      - run:
-          command: envsubst < .kube/deployment.<< parameters.environment >>.yml > .kube/deployment.yml
+          name: Copy certificate
+          command: echo "$KUBERNETES_CLUSTER_CERTIFICATE" | base64 --decode > cert.crt
       - run:
           command: |
-            echo "$KUBERNETES_CLUSTER_CERTIFICATE" | base64 --decode > cert.crt && \
-            ./kubectl --kubeconfig=/dev/null \
+            ENVIRONMENT=<< parameters.environment >> jskube apply \
+                    --kubeconfig=/dev/null \
                     --server=$KUBERNETES_SERVER \
                     --certificate-authority=cert.crt \
                     --token=$KUBERNETES_TOKEN \
-                    apply -f .kube/deployment.yml
+                    -f .kube/deployment.ts
