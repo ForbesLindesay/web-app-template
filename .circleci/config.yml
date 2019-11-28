@@ -111,7 +111,7 @@ commands:
         type: enum
         enum: ['staging', 'production']
     steps:
-      - kube-orb/install
+      - kubernetes/install
       - run:
           name: Install jskube
           command: yarn global add jskube
