@@ -123,4 +123,9 @@ commands:
                     -f .kube/deployment.ts
       - run:
           name: Wait for rollout to complete
-          command: kubectl rollout status deployment/web-app-template-<< parameters.environment >> --namespace web-app-template
+          command: |
+            kubectl rollout status deployment/web-app-template-<< parameters.environment >> --namespace web-app-template \
+                    --kubeconfig=/dev/null \
+                    --server=$KUBERNETES_SERVER \
+                    --certificate-authority=cert.crt \
+                    --token=$KUBERNETES_TOKEN \
