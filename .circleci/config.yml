@@ -110,6 +110,7 @@ commands:
       environment:
         type: enum
         enum: ['staging', 'production']
+    steps:
       - kube-orb/install
       - run:
           name: Install jskube

@@ -2,6 +2,6 @@ import http from 'http';
 
 http
   .createServer((_req, res) => {
-    res.end('Hello Kubernetes');
+    res.end('No More YAML');
   })
   .listen(process.env.PORT || 3000);
