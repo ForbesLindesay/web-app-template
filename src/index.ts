@@ -2,6 +2,6 @@ import http from 'http';
 
 http
   .createServer((_req, res) => {
-    res.end('No More YAML');
+    res.end('Wait for it...');
   })
   .listen(process.env.PORT || 3000);

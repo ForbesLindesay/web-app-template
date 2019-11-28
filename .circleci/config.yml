@@ -109,13 +109,11 @@ commands:
         enum: ['staging', 'production']
     steps:
       - kubernetes/install
-      # - run:
-      #     name: Install jskube
-      #     command: yarn global add jskube ts-node typescript
       - run:
           name: Copy certificate
           command: echo "$KUBERNETES_CLUSTER_CERTIFICATE" | base64 --decode > cert.crt
       - run:
+          name: Deploy to Kubernetes
           command: |
             ENVIRONMENT=<< parameters.environment >> npx jskube apply \
                     --kubeconfig=/dev/null \
@@ -123,3 +121,6 @@ commands:
                     --certificate-authority=cert.crt \
                     --token=$KUBERNETES_TOKEN \
                     -f .kube/deployment.ts
+      - run:
+          name: Wait for rollout to complete
+          command: kubectl rollout status deployment/web-app-template-<< parameters.environment >> --namespace web-app-template
