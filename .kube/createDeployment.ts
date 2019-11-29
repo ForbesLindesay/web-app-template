@@ -61,18 +61,21 @@ export default function createDeployment({
         spec: {
           affinity: {
             podAntiAffinity: {
-              requiredDuringSchedulingIgnoredDuringExecution: [
+              preferredDuringSchedulingIgnoredDuringExecution: [
                 {
-                  labelSelector: {
-                    matchExpressions: [
-                      {
-                        key: 'app',
-                        operator: 'In',
-                        values: [name],
-                      },
-                    ],
+                  weight: 1,
+                  podAffinityTerm: {
+                    labelSelector: {
+                      matchExpressions: [
+                        {
+                          key: 'app',
+                          operator: 'In',
+                          values: [name],
+                        },
+                      ],
+                    },
+                    topologyKey: 'kubernetes.io/hostname',
                   },
-                  topologyKey: 'kubernetes.io/hostname',
                 },
               ],
             },
