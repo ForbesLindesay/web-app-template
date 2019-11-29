@@ -13,4 +13,7 @@ export default createDeployment({
   containerPort: 3000,
   replicaCount: 2,
   image: `${process.env.DOCKERHUB_USERNAME}/web-app-template:${process.env.CIRCLE_SHA1}`,
+  container: {
+    env: [{name: 'ENV_VAR', value: 'Hello Env Var'}],
+  },
 });

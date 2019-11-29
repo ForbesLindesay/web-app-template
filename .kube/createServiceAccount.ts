@@ -64,9 +64,7 @@ export default function createServiceAccount({namespace}: {namespace: string}) {
     },
   };
 
-  console.info(`To get the KUBERNETES_TOKEN, run`);
-  console.info(
-    `  kubectl get secret $(kubectl get secret --namespace ${namespace} | grep cicd-token | awk '{print $1}') --namespace ${namespace} -o jsonpath='{.data.token}' | base64 --decode && echo ""`,
-  );
+  console.info(`To get the CI config:`);
+  console.info(`  jskube get-env-vars --user cicd --namespace ${namespace}`);
   return [namespaceSpec, serviceAccount, role, roleBinding];
 }

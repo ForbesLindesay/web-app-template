@@ -1,6 +1,10 @@
 import Service from 'jskube/schema/service-v1';
 import Deployment from 'jskube/schema/deployment-apps-v1';
 
+export type Containers = Deployment['spec']['template']['spec']['containers'];
+export type Container = Containers extends ReadonlyArray<infer Element>
+  ? Partial<Element>
+  : unknown;
 export interface Options {
   namespace: string;
   name: string;
@@ -8,6 +12,8 @@ export interface Options {
   replicaCount: number;
   containerPort: number;
   image: string;
+  container?: Container;
+  supportingContainers?: Containers;
 }
 // # Check deployment rollout status every 10 seconds (max 10 minutes) until complete.
 // ATTEMPTS=0
@@ -23,6 +29,8 @@ export default function createDeployment({
   containerPort,
   replicaCount,
   image,
+  container,
+  supportingContainers,
 }: Options) {
   const service: Service = {
     apiVersion: 'v1',
@@ -59,10 +67,12 @@ export default function createDeployment({
         spec: {
           containers: [
             {
-              name: name,
+              ...container,
+              name,
               image,
               ports: [{containerPort}],
             },
+            ...supportingContainers,
           ],
         },
       },
