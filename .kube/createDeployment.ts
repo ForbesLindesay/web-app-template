@@ -72,7 +72,7 @@ export default function createDeployment({
               image,
               ports: [{containerPort}],
             },
-            ...supportingContainers,
+            ...(supportingContainers || []),
           ],
         },
       },
