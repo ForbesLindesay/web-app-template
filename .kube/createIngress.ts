@@ -1,24 +1,28 @@
 import Ingress from 'jskube/schema/ingress-extensions-v1beta1';
 
 export interface Options {
+  name: string;
   namespace: string;
 
   host: string;
-  serviceName: string;
+  serviceName?: string;
   enableTLS: boolean;
 }
 export default function createIngress({
+  name,
   namespace,
+
   host,
+
   serviceName,
   enableTLS,
 }: Options) {
-  const secretName = `${host}-tls-secret`;
+  const secretName = `${name}-tls-secret`;
   const ingress: Ingress = {
     apiVersion: 'extensions/v1beta1',
     kind: 'Ingress',
     metadata: {
-      name: host,
+      name,
       namespace,
     },
     spec: {
@@ -31,7 +35,9 @@ export default function createIngress({
         {
           host,
           http: {
-            paths: [{backend: {serviceName, servicePort: 80}}],
+            paths: [
+              {backend: {serviceName: serviceName || name, servicePort: 80}},
+            ],
           },
         },
       ],
@@ -41,7 +47,7 @@ export default function createIngress({
     apiVersion: 'cert-manager.io/v1alpha2',
     kind: 'Certificate',
     metadata: {
-      name: host,
+      name,
       namespace,
     },
     spec: {
@@ -50,13 +56,12 @@ export default function createIngress({
         name: 'letsencrypt-prod',
         kind: 'ClusterIssuer',
       },
-      // commonName: host,
       dnsNames: [host],
     },
   };
   if (enableTLS) {
     console.info(
-      `To check certificate status, run: kubectl describe certificate ${host} --namespace ${namespace}`,
+      `To check certificate status, run: kubectl describe certificate ${name} --namespace ${namespace}`,
     );
   }
   return [ingress, ...(enableTLS ? [certificate] : [])];
