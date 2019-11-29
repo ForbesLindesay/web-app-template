@@ -7,14 +7,16 @@ export default [
     name: 'web-app-template-staging',
     namespace: 'web-app-template',
     serviceName: 'web-app-template-staging',
-    host: 'web-app-template.staging.makewebtech.org',
+    hosts: ['web-app-template.staging.makewebtech.org'],
     enableTLS: true,
+    stagingTLS: true,
   }),
   ...createIngress({
     name: 'web-app-template-production',
     namespace: 'web-app-template',
     serviceName: 'web-app-template-production',
-    host: 'web-app-template.makewebtech.org',
+    hosts: ['web-app-template.makewebtech.org'],
     enableTLS: true,
+    stagingTLS: true,
   }),
 ];

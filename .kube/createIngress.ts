@@ -3,19 +3,20 @@ import Ingress from 'jskube/schema/ingress-extensions-v1beta1';
 export interface Options {
   name: string;
   namespace: string;
-
-  host: string;
+  hosts: string[];
   serviceName?: string;
   enableTLS: boolean;
+  stagingTLS: boolean;
 }
 export default function createIngress({
   name,
   namespace,
 
-  host,
+  hosts,
 
   serviceName,
   enableTLS,
+  stagingTLS,
 }: Options) {
   const secretName = `${name}-tls-secret`;
   const ingress: Ingress = {
@@ -28,19 +29,17 @@ export default function createIngress({
     spec: {
       ...(enableTLS
         ? {
-            tls: [{hosts: [host], secretName}],
+            tls: [{hosts, secretName}],
           }
         : {}),
-      rules: [
-        {
-          host,
-          http: {
-            paths: [
-              {backend: {serviceName: serviceName || name, servicePort: 80}},
-            ],
-          },
+      rules: hosts.map((host) => ({
+        host,
+        http: {
+          paths: [
+            {backend: {serviceName: serviceName || name, servicePort: 80}},
+          ],
         },
-      ],
+      })),
     },
   };
   const certificate = {
@@ -53,10 +52,10 @@ export default function createIngress({
     spec: {
       secretName,
       issuerRef: {
-        name: 'letsencrypt-prod',
+        name: stagingTLS ? 'letsencrypt-staging' : 'letsencrypt-prod',
         kind: 'ClusterIssuer',
       },
-      dnsNames: [host],
+      dnsNames: hosts,
     },
   };
   if (enableTLS) {

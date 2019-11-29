@@ -32,7 +32,8 @@ TODO
 1. Replace web-app-template with the name of your app in all files
 1. Point the DNS for your domain name at your loadbalancer's external IP (which you can get by running `kubectl get svc --namespace=ingress-nginx`)
 1. Run `npx jskube .kube/setup.ts` - N.B. this will attempt to get an SSL certificate, so you must first point the DNS records at your loadbalancer.
-1. Run `npx jskube .kube/deployment-placeholder.ts` (optional). If you do this, you should be able to load the website at the domain name you selected.
+1. Run `npx jskube .kube/deployment-placeholder.ts` (optional). If you do this, you should be able to load the website at the domain name you selected, but you will have to bypass a warning about a certificate error as it will be using the letsencrypt staging ssl certificate.
+1. Once the certificate is issued successfully and you are happy with the domain name of your service, you can set `stagingTLS` to `false` in `.kube/setup.ts` and re-run `npx jskube .kube/setup.ts` to request production TLS certificates.
 
 
 ## Deploying locally
