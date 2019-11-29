@@ -1,6 +1,6 @@
 # web-app-template
 
-A template for a node app using TypeScript deployed to dokku
+A template for a node app using TypeScript deployed to kubernetes
 
 ## Setting up Dokku
 

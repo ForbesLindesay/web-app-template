@@ -2487,10 +2487,10 @@ jsesc@^2.5.1:
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
-jskube@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/jskube/-/jskube-1.1.1.tgz#a274698af816ac864784da9108f24a2feebd749e"
-  integrity sha512-h+LTY0LhZJ5Tiej/YV7cQdUIQ3oW9zINCkUgWQxBRsyv5dmBRmL8xY0AakpnCSelguIY4vE3tvtCMVQmPen18Q==
+jskube@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/jskube/-/jskube-1.1.2.tgz#8f171c10e52f486d6a2a7dd5c3e62cdf3c46be1e"
+  integrity sha512-9bx9sJzmW9fZhiJfOhri0NEbTx9CydieaflOnLhk5Xe4yDbiyJHXSFYkyI7PQBLzxV/WIVcLZ12niAMeFxVyjQ==
   dependencies:
     js-yaml "^3.13.1"
     tmp "^0.1.0"
