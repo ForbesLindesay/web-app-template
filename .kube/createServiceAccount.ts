@@ -3,14 +3,6 @@ import ServiceAccount from 'jskube/schema/serviceaccount-v1';
 import Role from 'jskube/schema/role-rbac-v1';
 import RoleBinding from 'jskube/schema/rolebinding-rbac-v1';
 
-// kubectl config view -o jsonpath='{.current-context}'
-// # KUBERNETES_TOKEN=
-// #   kubectl get secret $(kubectl get secret --namespace web-app-template | grep cicd-token | awk '{print $1}') --namespace web-app-template -o jsonpath='{.data.token}' | base64 --decode && echo ""
-// # KUBERNETES_SERVER=
-// #   kubectl config view -o jsonpath="{.clusters[?(@.name == \"`kubectl config view -o jsonpath='{.current-context}'`\")].cluster.server}" --raw && echo ""
-// # KUBERNETES_CLUSTER_CERTIFICATE=
-// #   kubectl config view -o jsonpath="{.clusters[?(@.name == \"`kubectl config view -o jsonpath='{.current-context}'`\")].cluster.certificate-authority-data}" --raw && echo ""
-
 export default function createServiceAccount({namespace}: {namespace: string}) {
   const namespaceSpec: Namespace = {
     apiVersion: 'v1',

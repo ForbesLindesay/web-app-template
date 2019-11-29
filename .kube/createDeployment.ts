@@ -5,6 +5,7 @@ export type Containers = Deployment['spec']['template']['spec']['containers'];
 export type Container = Containers extends ReadonlyArray<infer Element>
   ? Partial<Element>
   : unknown;
+
 export interface Options {
   namespace: string;
   name: string;
@@ -15,14 +16,7 @@ export interface Options {
   container?: Container;
   supportingContainers?: Containers;
 }
-// # Check deployment rollout status every 10 seconds (max 10 minutes) until complete.
-// ATTEMPTS=0
-// ROLLOUT_STATUS_CMD="kubectl rollout status deployment/myapp -n namespace"
-// until $ROLLOUT_STATUS_CMD || [ $ATTEMPTS -eq 60 ]; do
-//   $ROLLOUT_STATUS_CMD
-//   ATTEMPTS=$((attempts + 1))
-//   sleep 10
-// done
+
 export default function createDeployment({
   namespace,
   name,
@@ -65,6 +59,24 @@ export default function createDeployment({
           },
         },
         spec: {
+          affinity: {
+            podAntiAffinity: {
+              requiredDuringSchedulingIgnoredDuringExecution: [
+                {
+                  labelSelector: {
+                    matchExpressions: [
+                      {
+                        key: 'app',
+                        operator: 'IN',
+                        values: [name],
+                      },
+                    ],
+                  },
+                  topologyKey: 'kubernetes.io/hostname',
+                },
+              ],
+            },
+          },
           containers: [
             {
               ...container,

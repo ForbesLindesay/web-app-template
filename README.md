@@ -2,15 +2,14 @@
 
 A template for a node app using TypeScript deployed to kubernetes
 
-## Setting up Dokku
+## Setting up Kubernetes
 
-See https://github.com/ForbesLindesay/dokku-ci-user for setup instructions
+TODO
 
 ## Setting up the repo
 
 1. Hit "Use This Template" to create the repository
 1. Enable [CircleCI](https://circleci.com/add-projects/gh/ForbesLindesay)
-1. Enable [semantic-pull-requests](https://github.com/apps/semantic-pull-requests)
 1. In Settings
    1. Disable "Wikis"
    1. Disable "Projects"
@@ -30,39 +29,24 @@ See https://github.com/ForbesLindesay/dokku-ci-user for setup instructions
 
 ## Setting up a new app
 
-1. ssh into the dokku server `ssh dokku`
-1. create the app `dokku apps:create web-app-template && dokku apps:create web-app-template-staging`
-1. enable zero downtime deploys `dokku checks:enable web-app-template && dokku checks:enable web-app-template-staging` - N.B. this will result in 2 coppies of each app running in parallel during deploys
+1. Replace web-app-template with the name of your app in all files
+1. Point the DNS for your domain name at your loadbalancer's external IP (which you can get by running `kubectl get svc --namespace=ingress-nginx`)
+1. Run `npx jskube .kube/setup.ts` - N.B. this will attempt to get an SSL certificate, so you must first point the DNS records at your loadbalancer.
+1. Run `npx jskube .kube/deployment-placeholder.ts` (optional). If you do this, you should be able to load the website at the domain name you selected.
+
 
 ## Deploying locally
 
-See [Dokku - Docker Image Tag Deployment](http://dokku.viewdocs.io/dokku/deployment/methods/images/)
-
 1. build the typescript etc. `yarn build`
-1. build an initial image `docker build -t dokku/web-app-template:0 .`
-1. push `docker-over-ssh push dokku/web-app-template:0 ssh dokku "docker-over-ssh pull dokku/web-app-template:0"`
-1. deploy `ssh dokku "dokku tags:deploy web-app-template 0"`
+1. build an initial image `docker build -t forbeslindesay/web-app-template:hotfix-01 .`
+1. push `docker push forbeslindesay/web-app-template:hotfix-01"`
+1. deploy `ENVIRONMENT=staging DOCKERHUB_USERNAME=forbeslindesay CIRCLE_SHA1=hotfix-01 jskube apply -f .kube/deployment`
 
 ## Setting up Circle CI
 
 After you follow the instructions for "Setting up a new app". You can configure CI to deploy your app.
 
-1. Generate a key to use for deployment: `ssh-keygen -m PEM -t rsa -C web-app-template -f key` **N.B. do not enter a pass phrase when prompted, Circle CI cannot decrypt ssh keys protected by pass phrases.**.
-1. Go to Circle CI -> web-app-template -> Settings -> SSH Permissions (https://circleci.com/gh/ForbesLindesay/web-app-template/edit#ssh)
-1. Put the copy of the `key` file into a new SSH key and leave the hostname blank
-1. Copy the "Fingerprint" into ".circleci/config.yml" in place of the fingerprint that is currently there.
-1. `cat key.pub | ssh dokku "dokku-ci-user add:user --name web-app-template --app web-app-template --app web-app-template-staging"`.
-1. Set the `DOKKU_SERVER` env var to the IP address of your dokku server in Circle CI.
-
-## Enabling HTTPS
-
-See [Effortlessly add HTTPS to Dokku, with Let’s Encrypt](https://medium.com/@pimterry/effortlessly-add-https-to-dokku-with-lets-encrypt-900696366890)
-
-1. ssh into the dokku server `ssh dokku`
-1. Update letsencrypt plugin `dokku plugin:update letsencrypt`
-1. Set email for app `dokku config:set --no-restart web-app-template DOKKU_LETSENCRYPT_EMAIL=YOUR_EMAIL_ADDRESS_HERE`
-1. Enable letsencrypt `dokku letsencrypt web-app-template`
-1. Set email for app `dokku config:set --no-restart web-app-template-staging DOKKU_LETSENCRYPT_EMAIL=YOUR_EMAIL_ADDRESS_HERE`
-1. Enable letsencrypt `dokku letsencrypt web-app-template-staging`
-
-(one off for the server, also run `dokku letsencrypt:cron-job --add`)
+1. Run `jskube get-env-vars --user cicd --namespace ${namespace}` to get the environment variables for connecting to kubernetes
+1. Get your dockerhub username and password as `DOCKERHUB_USERNAME` and `DOCKERHUB_PASS`
+1. Add the environment variables to Circle CI -> web-app-template -> Settings -> Environment Variables
+ (https://circleci.com/gh/ForbesLindesay/web-app-template/edit#env-vars)

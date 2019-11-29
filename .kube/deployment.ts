@@ -6,6 +6,14 @@ if (!['staging', 'production'].includes(process.env.ENVIRONMENT)) {
   );
   process.exit(1);
 }
+if (!process.env.DOCKERHUB_USERNAME) {
+  console.error('DOCKERHUB_USERNAME must be specified');
+  process.exit(1);
+}
+if (!process.env.CIRCLE_SHA1) {
+  console.error('CIRCLE_SHA1 must be specified');
+  process.exit(1);
+}
 
 export default createDeployment({
   namespace: 'web-app-template',
