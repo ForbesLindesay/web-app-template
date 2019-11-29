@@ -67,7 +67,7 @@ export default function createDeployment({
                     matchExpressions: [
                       {
                         key: 'app',
-                        operator: 'IN',
+                        operator: 'In',
                         values: [name],
                       },
                     ],
