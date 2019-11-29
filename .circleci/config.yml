@@ -121,7 +121,7 @@ commands:
       - run:
           name: Wait for rollout to complete
           command: |
-            kubectl rollout status \
+            npx jskube rollout status \
                     deployment/web-app-template-<< parameters.environment >> \
                     --namespace web-app-template \
                     --kubeconfig=/dev/null
