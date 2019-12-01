@@ -15,15 +15,15 @@ refs:
         ignore: master
 
 workflows:
-  # test:
-  #   jobs:
-  #     - unit-tests:
-  #         <<: *not_master
+  test:
+    jobs:
+      - unit-tests:
+          <<: *not_master
 
   release:
     jobs:
       - deploy-staging:
-          # <<: *only_master
+          <<: *only_master
           context: common-env
 
       - production-approval:
@@ -33,7 +33,7 @@ workflows:
             - deploy-staging
 
       - deploy-production:
-          # <<: *only_master
+          <<: *only_master
           context: common-env
           requires:
             - production-approval
