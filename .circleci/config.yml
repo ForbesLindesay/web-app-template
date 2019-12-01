@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  kubernetes: circleci/kubernetes@0.10.1
+
 refs:
   - &only_master
     filters:
@@ -47,22 +50,20 @@ jobs:
   deploy-staging:
     docker:
       - image: circleci/node:12
-        environment:
-          LOCAL_DOCKER_REGISTRY_PORT: 5000
-      - image: registry:2
     steps:
       - setup
       - build
-      - authenticate
       - push
-      - deploy-staging
+      - deploy:
+          environment: staging
 
   deploy-production:
     docker:
       - image: circleci/node:12
     steps:
-      - authenticate
-      - deploy-production
+      - setup
+      - deploy:
+          environment: production
 
 commands:
   setup:
@@ -74,7 +75,7 @@ commands:
           command: node -v && npm -v && yarn -v
       - run:
           name: Install Dependencies
-          command: yarn install --pure-lockfile
+          command: yarn install --frozen-lockfile
 
   build:
     steps:
@@ -88,36 +89,39 @@ commands:
           name: Test
           command: yarn test
 
-  authenticate:
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - '2f:e6:90:bb:61:85:fe:d5:9a:1a:27:77:9e:09:8d:fd'
-      - run:
-          name: Test Connection
-          command: ssh -o StrictHostKeyChecking=no ci@$DOKKU_SERVER "dokku version"
-
   push:
     steps:
       - setup_remote_docker
       - run:
           name: Build Docker
-          command: docker build -t dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
+          command: docker build -t $DOCKERHUB_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
+      - run:
+          name: Authenticate
+          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
       - run:
           name: Push Docker
-          command: yarn add docker-over-ssh ngrok && npx docker-over-ssh push dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 ssh ci@$DOKKU_SERVER "docker-over-ssh pull dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1"
+          command: docker push $DOCKERHUB_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
 
-  deploy-staging:
+  deploy:
+    parameters:
+      environment:
+        type: enum
+        enum: ['staging', 'production']
     steps:
+      - kubernetes/install
       - run:
-          name: Tag Docker (Staging)
-          command: ssh ci@$DOKKU_SERVER "docker tag dokku/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 dokku/$CIRCLE_PROJECT_REPONAME-staging:$CIRCLE_SHA1"
+          name: Copy certificate
+          command: echo "$KUBERNETES_CLUSTER_CERTIFICATE" | base64 --decode > cert.crt
       - run:
-          name: Update Server (Staging)
-          command: ssh ci@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME-staging $CIRCLE_SHA1"
-
-  deploy-production:
-    steps:
+          name: Deploy to Kubernetes
+          command: |
+            ENVIRONMENT=<< parameters.environment >> npx jskube apply \
+                    --kubeconfig=/dev/null \
+                    -f .kube/deployment.ts
       - run:
-          name: Update Server (Production)
-          command: ssh ci@$DOKKU_SERVER "dokku tags:deploy $CIRCLE_PROJECT_REPONAME $CIRCLE_SHA1"
+          name: Wait for rollout to complete
+          command: |
+            npx jskube rollout status \
+                    deployment/web-app-template-<< parameters.environment >> \
+                    --namespace web-app-template \
+                    --kubeconfig=/dev/null

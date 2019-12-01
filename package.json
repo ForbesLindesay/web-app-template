@@ -1,5 +1,6 @@
 {
   "name": "@forbeslindesay/web-app-template",
+  "private": true,
   "description": "web-app-template",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,10 +22,12 @@
     "@types/jest": "^24.0.18",
     "husky": "^3.0.8",
     "jest": "^24.9.0",
+    "jskube": "^1.1.2",
     "lint-staged": "^9.4.2",
     "prettier": "^1.18.2",
     "rimraf": "^3.0.0",
     "ts-jest": "^24.1.0",
+    "ts-node": "^8.5.3",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4"
   },
